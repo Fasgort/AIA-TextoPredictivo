@@ -15,7 +15,7 @@ import unicodedata
 def elimina_tildes(s):
    return ''.join((c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn'))
 
-def traduce_numerico(translate_str):
+def traduce_to_numerico(translate_str):
     translate_str = elimina_tildes(translate_str)
     translate_str = re.sub(r'[^\w]', ' ', translate_str)
     translate_str = re.sub('[!@#$ºª]', ' ', translate_str)
@@ -29,6 +29,15 @@ def traduce_numerico(translate_str):
     .replace('w','9').replace('x','9').replace('y','9').replace('z','9') for t in translate_str]
     return translate_str
 
+def traduce_from_numerico(diccionario, translate_num):
+    translate_num = translate_num.split(" ")
+    translated_str = []
+    for t in translate_num:
+        try:
+            translated_str.append(diccionario.get(int(t))[0][0])
+        except:
+            translated_str.append("error")
+    return translated_str
 # Lectura y transformación de Corpus
 wordlists = PlaintextCorpusReader("F:\\MII-TextoPredictivo\\Corpus\\", '.*')
 wordlists.words('')
@@ -47,7 +56,7 @@ tokens_num = [t.replace('a', '2').replace('b','2').replace('c','2')
 .replace('w','9').replace('x','9').replace('y','9').replace('z','9') for t in tokens]
 
 # Código para traducir un input a teclado númerico
-translate_str = "Esto es un ejemplo"
+translate_str = "Hortensia está con Pepita y Elvira"
 translate_str = traduce_numerico(translate_str)
 for t in translate_str:
    print(t)
@@ -76,3 +85,9 @@ print("\n")
 print("Search for 72727: ")
 print(dict_tokens_freq[72727])
 print("\n")
+
+# Código para traducir un input númerico a texto predictivo
+translate_num = "467836742 3782 266 737482 9 358472"
+translated_num = traduce_from_numerico(dict_tokens_freq,translate_num)
+print(translated_num)
+    
