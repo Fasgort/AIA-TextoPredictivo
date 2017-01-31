@@ -27,37 +27,38 @@ def traduce_from_numerico(diccionario, translate_num):
             translated_str.append("$NoMatchInCorpus")
     return translated_str
 
-
-# Lectura y transformación de Corpus
-wordlists = PlaintextCorpusReader("F:\\MII-TextoPredictivo\\Corpus\\", '.*')
-tokenizer = RegexpTokenizer(r'[a-zA-Záéíóú]+')
-tokens = tokenizer.tokenize(wordlists.raw())
-tokens_num = tokens.copy()
-tokens_num = [traduce_to_numerico(t) for t in tokens]
+def crear_diccionario_palabra_unigram():
+    # Lectura y transformación de Corpus
+    wordlists = PlaintextCorpusReader("F:\\MII-TextoPredictivo\\Corpus\\", '.*')
+    tokenizer = RegexpTokenizer(r'[a-zA-Záéíóú]+')
+    tokens = tokenizer.tokenize(wordlists.raw())
 
 
-# Generación diccionario de palabras + frecuencia
-fdist = FreqDist(tokens) # Estudio de frecuencia
-list_tokens_num = fdist.most_common()
-dict_tokens_freq = {}
-for t in list_tokens_num:
-    t_num = [traduce_to_numerico(t[0]),t[1]]
-    try:
-        length = len(dict_tokens_freq[int(t_num[0])])
-        dict_tokens_freq[(int(t_num[0]))]  = dict_tokens_freq[(int(t_num[0]))] + [[t[0],t[1]]]
-    except:
-        dict_tokens_freq[int(t_num[0])] = [[t[0],t[1]]]
+    # Generación diccionario de palabras + frecuencia
+    fdist = FreqDist(tokens) # Estudio de frecuencia
+    list_tokens_num = fdist.most_common()
+    dict_tokens_freq = {}
+    for t in list_tokens_num:
+        t_num = [traduce_to_numerico(t[0]),t[1]]
+        try:
+            dict_tokens_freq[(int(t_num[0]))]  = dict_tokens_freq[(int(t_num[0]))] + [[t[0],t[1]]] 
+        except:
+            dict_tokens_freq[int(t_num[0])] = [[t[0],t[1]]]
+            
+    return dict_tokens_freq
       
-    
+# Código ejemplo
+dictionaryUnigramWord = crear_diccionario_palabra_unigram()    
+
 # Código para consultar un input númerico a texto predictivo
 print("Search for 7436: ")
-print(dict_tokens_freq.get(7436))
+print(dictionaryUnigramWord.get(7436))
 print("\n")
 print("Search for 7276: ")
-print(dict_tokens_freq[7276])
+print(dictionaryUnigramWord[7276])
 print("\n")
 print("Search for 72727: ")
-print(dict_tokens_freq[72727])
+print(dictionaryUnigramWord[72727])
 print("\n")
 
 
@@ -70,5 +71,5 @@ print("\n");
      
 # Código para traducir un input númerico a texto predictivo
 translate_num = "467836742 3782 266 737482 9 358472"
-translated_num = traduce_from_numerico(dict_tokens_freq,translate_num)
+translated_num = traduce_from_numerico(dictionaryUnigramWord,translate_num)
 print(translated_num)
