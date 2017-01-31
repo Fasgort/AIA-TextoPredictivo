@@ -4,23 +4,17 @@ from nltk.corpus import PlaintextCorpusReader
 from nltk import FreqDist
 from nltk.tokenize import RegexpTokenizer
 import re
-import unicodedata
-
-def elimina_tildes(s):
-   return ''.join((c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn'))
 
 def traduce_to_numerico(translate_str):
-    translate_str = elimina_tildes(translate_str)
-    translate_str = re.sub(r'[^\w]', ' ', translate_str)
-    translate_str = re.sub('[!@#$ºª]', ' ', translate_str)
-    translate_str = tokenizer.tokenize(translate_str)
-    translate_str = [t.lower().replace('a', '2').replace('b','2').replace('c','2')
-    .replace('d','3').replace('e','3').replace('f','3').replace('g','4')
-    .replace('h','4').replace('i','4').replace('j','5').replace('k','5')
-    .replace('l','5').replace('m','6').replace('n','6').replace('ñ','6')
-    .replace('o','6').replace('p','7').replace('q','7').replace('r','7')
-    .replace('s','7').replace('t','8').replace('u','8').replace('v','8')
-    .replace('w','9').replace('x','9').replace('y','9').replace('z','9') for t in translate_str]
+    translate_str = re.sub("([^a-zA-Záéíóú ])","", translate_str.lower())
+    translate_str = re.sub("([aábc])","2", translate_str)
+    translate_str = re.sub("([deéf])","3", translate_str)
+    translate_str = re.sub("([ghií])","4", translate_str)
+    translate_str = re.sub("([jkl])","5", translate_str)
+    translate_str = re.sub("([mnñoó])","6", translate_str)
+    translate_str = re.sub("([pqrs])","7", translate_str)
+    translate_str = re.sub("([tuúv])","8", translate_str)
+    translate_str = re.sub("([wxyz])","9", translate_str)
     return translate_str
 
 def traduce_from_numerico(diccionario, translate_num):
@@ -30,52 +24,32 @@ def traduce_from_numerico(diccionario, translate_num):
         try:
             translated_str.append(diccionario.get(int(t))[0][0])
         except:
-            translated_str.append("error")
+            translated_str.append("$NoMatchInCorpus")
     return translated_str
 
 
 # Lectura y transformación de Corpus
 wordlists = PlaintextCorpusReader("F:\\MII-TextoPredictivo\\Corpus\\", '.*')
-wordlists.words('')
-tokenizer = RegexpTokenizer(r'\w+')
+tokenizer = RegexpTokenizer(r'[a-zA-Záéíóú]+')
 tokens = tokenizer.tokenize(wordlists.raw())
-tokens = [t.lower() for t in tokens]
-tokens = [elimina_tildes(t) for t in tokens]
-tokens = [re.sub(r'[^\w]', ' ', t) for t in tokens]
-tokens = [re.sub('[!@#$ºª]', '', t) for t in tokens]
-tokens_num = [t.replace('a', '2').replace('b','2').replace('c','2')
-.replace('d','3').replace('e','3').replace('f','3').replace('g','4')
-.replace('h','4').replace('i','4').replace('j','5').replace('k','5')
-.replace('l','5').replace('m','6').replace('n','6').replace('ñ','6')
-.replace('o','6').replace('p','7').replace('q','7').replace('r','7')
-.replace('s','7').replace('t','8').replace('u','8').replace('v','8')
-.replace('w','9').replace('x','9').replace('y','9').replace('z','9') for t in tokens]
+tokens_num = tokens.copy()
+tokens_num = [traduce_to_numerico(t) for t in tokens]
 
 
 # Generación diccionario de palabras + frecuencia
 fdist = FreqDist(tokens) # Estudio de frecuencia
-print(fdist.most_common(50)) # Las 50 palabras más frecuentes
 list_tokens_num = fdist.most_common()
 dict_tokens_freq = {}
 for t in list_tokens_num:
-    t_num = [t[0].lower().replace('a', '2').replace('b','2').replace('c','2').replace('d','3').replace('e','3').replace('f','3').replace('g','4').replace('h','4').replace('i','4').replace('j','5').replace('k','5').replace('l','5').replace('m','6').replace('n','6').replace('ñ','6').replace('o','6').replace('p','7').replace('q','7').replace('r','7').replace('s','7').replace('t','8').replace('u','8').replace('v','8').replace('w','9').replace('x','9').replace('y','9').replace('z','9'),t[1]]
+    t_num = [traduce_to_numerico(t[0]),t[1]]
     try:
         length = len(dict_tokens_freq[int(t_num[0])])
         dict_tokens_freq[(int(t_num[0]))]  = dict_tokens_freq[(int(t_num[0]))] + [[t[0],t[1]]]
     except:
         dict_tokens_freq[int(t_num[0])] = [[t[0],t[1]]]
-
-
-# Código para traducir un input a teclado númerico
-translate_str = "Hortensia está con Pepita y Elvira"
-translate_str = traduce_to_numerico(translate_str)
-for t in translate_str:
-   print(t)
-print("\n");
       
     
 # Código para consultar un input númerico a texto predictivo
-print("\n")     
 print("Search for 7436: ")
 print(dict_tokens_freq.get(7436))
 print("\n")
@@ -87,8 +61,14 @@ print(dict_tokens_freq[72727])
 print("\n")
 
 
+# Código para traducir un input a teclado númerico
+translate_str = "Hortensia está con Pepita y Elvira"
+translated_str = traduce_to_numerico(translate_str)
+print(translated_str)
+print("\n");
+
+     
 # Código para traducir un input númerico a texto predictivo
 translate_num = "467836742 3782 266 737482 9 358472"
 translated_num = traduce_from_numerico(dict_tokens_freq,translate_num)
 print(translated_num)
-    
