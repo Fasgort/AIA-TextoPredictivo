@@ -51,22 +51,17 @@ def diccionario_bigramLetras():
     
     bigrams = Counter(x+y for x, y in zip(*[corpus[i:] for i in range(2)]))
     bigrams_mix = Counter()
-    print(bigrams)
+    dict_bigrams = {}
     for b in bigrams:
         if b[0] != " " and b[1] != " ":
             b_tr = b[0] + traducciones.traduce_numerico(b[1])
             bigrams_mix[b_tr] = bigrams_mix[b_tr] + bigrams[b]
-    print(bigrams_mix)
-    list_tokens_num = bigrams_mix.most_common()
-    dict_tokens_freq = {}
-    for t in list_tokens_num:
-        if t[0][1] != " " and t[0][0] != " ":
-            t_key = int(t[0][1])
             try:
-                dict_tokens_freq[t_key] = dict_tokens_freq[t_key] + [[t[0][0], t[1]]]
+                if dict_bigrams[b_tr][1] < bigrams[b]:
+                    dict_bigrams[b_tr] = [b, bigrams[b]]
             except:
-                dict_tokens_freq[t_key] = [[t[0][0], t[1]]]
-    return dict_tokens_freq
+                dict_bigrams[b_tr] = [b, bigrams[b]]                    
+    return dict_bigrams
 
 def diccionario_unigramPalabras():
     # Lectura y transformación de Corpus
@@ -94,9 +89,6 @@ def diccionario_bigramPalabras():
     tokens = tokenizer.tokenize(corpus.raw())
     
     # Generación diccionario bigram de palabras + frecuencia
-    # ay yo que sé ya, dejadme ser libre
-    # esto necesita corrección
-    # diccionario
     bigrams_tokens = bigrams(tokens)
     for b in bigrams_tokens:
         b = (b[0], traducciones.traduce_numerico(b[1]))

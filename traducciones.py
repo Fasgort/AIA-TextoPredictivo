@@ -45,8 +45,9 @@ def traduce_bigramLetras(diccionario, translate_num):
         for n in range(len(num)):
             if (n-1) >= 0:
                 try:
+                    key = palabra[n-1] + str(num[n])
                     # Si la letra está en el diccionario se coge la primera que corresponda (la que más frecuencia tiene)
-                    palabra.append(diccionario.get([translated_str[n-1],int(num[n])])[0][0])
+                    palabra.append(diccionario.get(key)[0][1])
                 except:
                     # Si no está se llama al unigram de letras para intentar averiguarlo
                     diccionarioUnigramLetras = modelos_probabilisticos.diccionario_unigramLetras()
@@ -82,8 +83,9 @@ def traduce_bigramPalabras(diccionario, translate_num):
     for t in range(len(translate_num)):
         if (t-1) >= 0:
             try:
+                key = translated_str[t-1] + str(translate_num[t])
                 # Si la palabra está en el diccionario se coge la primera que corresponda (la que más frecuencia tiene)
-                translated_str.append(diccionario.get([translated_str[t-1],int(translate_num[t])])[0][0])
+                translated_str.append(diccionario.get(key)[0][1])
             except:
                 # Si no está se llama al unigram de palabras para intentar averiguarlo
                 diccionarioUnigramPalabras = modelos_probabilisticos.diccionario_unigramPalabras()

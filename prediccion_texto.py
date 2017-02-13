@@ -27,8 +27,7 @@ def prediccion_texto(opcion):
         prediccion_texto()
 
     elif (opcion == '2'):
-        #texto = input("\nIntroduzca la frase que deseea predecir: ")
-        texto = "test"
+        texto = input("\nIntroduzca la frase que deseea predecir: ")
         traduccion = traducciones.traduce_numerico(texto)
         diccionarioBigramLetras = modelos_probabilisticos.diccionario_bigramLetras()
         prediccion = traducciones.traduce_bigramLetras(diccionarioBigramLetras, traduccion)
@@ -48,14 +47,15 @@ def prediccion_texto(opcion):
         prediccion_texto()
 
     elif (opcion == '4'):
-        texto = input("\nIntroduzca la frase que deseea predecir: ")
+        #texto = input("\nIntroduzca la frase que deseea predecir: ")
+        texto = "Esto es un test"
         traduccion = traducciones.traduce_numerico(texto)
         diccionarioBigramPalabras = modelos_probabilisticos.diccionario_bigramPalabras()
         prediccion = traducciones.traduce_bigramPalabras(diccionarioBigramPalabras, traduccion)
         print("\nLa predicción realizada para bigram de palabras es: ")
         print(prediccion)
         print("\n___________________________________________________")
-        prediccion_texto()
+        prediccion_texto(6)
 
     elif (opcion == '5'):
         texto = input("\nIntroduzca la frase que deseea traducir a numérico: ")
@@ -72,4 +72,4 @@ def prediccion_texto(opcion):
         print ("\nSeleccione una opción del menú válida")
 
 
-prediccion_texto("2")
+prediccion_texto("4")
