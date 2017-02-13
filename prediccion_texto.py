@@ -4,7 +4,7 @@
 import traducciones
 import modelos_probabilisticos
 
-def prediccion_texto():
+def prediccion_texto(opcion):
     print("\nCaso Práctico 1. Predicción de texto\n")
     print(".....................MENÚ.......................")
     print("1. Predicción de texto por unigram de letras")
@@ -14,7 +14,7 @@ def prediccion_texto():
     print("5. Traducir de texto a numérico")
     print("6. Salir")
 
-    opcion = input("\nSeleccione la opción que desea realizar: ")
+    #opcion = input("\nSeleccione la opción que desea realizar: ")
 
     if (opcion == '1'):
         texto = input("\nIntroduzca la frase que deseea predecir: ")
@@ -27,7 +27,8 @@ def prediccion_texto():
         prediccion_texto()
 
     elif (opcion == '2'):
-        texto = input("\nIntroduzca la frase que deseea predecir: ")
+        #texto = input("\nIntroduzca la frase que deseea predecir: ")
+        texto = "test"
         traduccion = traducciones.traduce_numerico(texto)
         diccionarioBigramLetras = modelos_probabilisticos.diccionario_bigramLetras()
         prediccion = traducciones.traduce_bigramLetras(diccionarioBigramLetras, traduccion)
@@ -71,4 +72,4 @@ def prediccion_texto():
         print ("\nSeleccione una opción del menú válida")
 
 
-prediccion_texto()
+prediccion_texto("2")

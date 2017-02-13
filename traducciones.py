@@ -42,14 +42,20 @@ def traduce_bigramLetras(diccionario, translate_num):
 
     for num in translate_num:
         palabra = []
-        for n in num:
-            try:
-                # Si la letra está en el diccionario se coge la primera que corresponda (la que más frecuencia tiene)
-                palabra.append(diccionario.get(int(n))[0][0])
-            except:
-                # Si no está se llama al unigram de letras para intentar averiguarlo
+        for n in range(len(num)):
+            if (n-1) >= 0:
+                try:
+                    # Si la letra está en el diccionario se coge la primera que corresponda (la que más frecuencia tiene)
+                    palabra.append(diccionario.get([translated_str[n-1],int(num[n])])[0][0])
+                except:
+                    # Si no está se llama al unigram de letras para intentar averiguarlo
+                    diccionarioUnigramLetras = modelos_probabilisticos.diccionario_unigramLetras()
+                    p = traduce_unigramLetras(diccionarioUnigramLetras, num[n])
+                    palabra.append(p)
+            else:
+                # Si es la primera letra, resolvemos con el modelo unigram
                 diccionarioUnigramLetras = modelos_probabilisticos.diccionario_unigramLetras()
-                p = traduce_unigramLetras(diccionarioUnigramLetras, n)
+                p = traduce_unigramLetras(diccionarioUnigramLetras, num[n])
                 palabra.append(p)
         translated_str.append(''.join(palabra))
 
@@ -73,14 +79,20 @@ def traduce_unigramPalabras(diccionario, translate_num):
 def traduce_bigramPalabras(diccionario, translate_num):
     translate_num = translate_num.split(" ")
     translated_str = []
-    for t in translate_num:
-        try:
-            # Si la palabra está en el diccionario se coge la primera que corresponda (la que más frecuencia tiene)
-            translated_str.append(diccionario.get(int(t))[0][0])
-        except:
-            # Si no está se llama al unigram de palabras para intentar averiguarlo
+    for t in range(len(translate_num)):
+        if (t-1) >= 0:
+            try:
+                # Si la palabra está en el diccionario se coge la primera que corresponda (la que más frecuencia tiene)
+                translated_str.append(diccionario.get([translated_str[t-1],int(translate_num[t])])[0][0])
+            except:
+                # Si no está se llama al unigram de palabras para intentar averiguarlo
+                diccionarioUnigramPalabras = modelos_probabilisticos.diccionario_unigramPalabras()
+                palabra = traduce_unigramPalabras(diccionarioUnigramPalabras, translate_num[t])
+                translated_str.append(palabra)
+        else:
+            # Si es la primera palabra, resolvemos con el modelo unigram
             diccionarioUnigramPalabras = modelos_probabilisticos.diccionario_unigramPalabras()
-            palabra = traduce_unigramPalabras(diccionarioUnigramPalabras, t)
+            palabra = traduce_unigramPalabras(diccionarioUnigramPalabras, translate_num[t])
             translated_str.append(palabra)
 
     return ' '.join(translated_str)

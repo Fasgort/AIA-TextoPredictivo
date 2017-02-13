@@ -50,15 +50,14 @@ def diccionario_bigramLetras():
     corpus = re.sub("([\n])", " ", corpus)
     
     bigrams = Counter(x+y for x, y in zip(*[corpus[i:] for i in range(2)]))
-    bigrams_updated = []
+    bigrams_mix = Counter()
+    print(bigrams)
     for b in bigrams:
-        if b[1] != " " and b[0] != " ":
-            b = list(b)
-            b[1] = traducciones.traduce_numerico(b[1])
-            b = "".join(b)
-            bigrams_updated.append(b)
-    bigrams_updated = Counter(bigrams_updated)
-    list_tokens_num = bigrams_updated.most_common()
+        if b[0] != " " and b[1] != " ":
+            b_tr = b[0] + traducciones.traduce_numerico(b[1])
+            bigrams_mix[b_tr] = bigrams_mix[b_tr] + bigrams[b]
+    print(bigrams_mix)
+    list_tokens_num = bigrams_mix.most_common()
     dict_tokens_freq = {}
     for t in list_tokens_num:
         if t[0][1] != " " and t[0][0] != " ":
