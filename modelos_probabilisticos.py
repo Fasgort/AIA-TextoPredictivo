@@ -40,7 +40,6 @@ def diccionario_unigramLetras():
             diccionario.get(numerico).append([letra_frec[0], letra_frec[1]])
         else:
             diccionario[numerico] = [[letra_frec[0], letra_frec[1]]]
-
     return diccionario
 
 def diccionario_bigramLetras():
@@ -50,12 +49,12 @@ def diccionario_bigramLetras():
     corpus = re.sub("([\n])", " ", corpus)
     
     bigrams = Counter(x+y for x, y in zip(*[corpus[i:] for i in range(2)]))
-    bigrams_mix = Counter()
+    #bigrams_mix = Counter()
     dict_bigrams = {}
     for b in bigrams:
         if b[0] != " " and b[1] != " ":
             b_tr = b[0] + traducciones.traduce_numerico(b[1])
-            bigrams_mix[b_tr] = bigrams_mix[b_tr] + bigrams[b]
+            #bigrams_mix[b_tr] = bigrams_mix[b_tr] + bigrams[b]
             try:
                 if dict_bigrams[b_tr][1] < bigrams[b]:
                     dict_bigrams[b_tr] = [b, bigrams[b]]
@@ -72,15 +71,14 @@ def diccionario_unigramPalabras():
     # Generación diccionario unigram de palabras + frecuencia
     fdist = FreqDist(tokens)  # Estudio de frecuencia
     list_tokens_num = fdist.most_common()
-    dict_tokens_freq = {}
+    dict_unigrams = {}
     for t in list_tokens_num:
         t_num = [traducciones.traduce_numerico(t[0]), t[1]]
         try:
-            dict_tokens_freq[(int(t_num[0]))] = dict_tokens_freq[(int(t_num[0]))] + [[t[0], t[1]]]
+            dict_unigrams[(int(t_num[0]))] = dict_unigrams[(int(t_num[0]))] + [[t[0], t[1]]]
         except:
-            dict_tokens_freq[int(t_num[0])] = [[t[0], t[1]]]
-
-    return dict_tokens_freq
+            dict_unigrams[int(t_num[0])] = [[t[0], t[1]]]
+    return dict_unigrams
 
 def diccionario_bigramPalabras():
     # Lectura y transformación de Corpus
@@ -89,19 +87,14 @@ def diccionario_bigramPalabras():
     tokens = tokenizer.tokenize(corpus.raw())
     
     # Generación diccionario bigram de palabras + frecuencia
-    bigrams_tokens = bigrams(tokens)
-    for b in bigrams_tokens:
-        b = (b[0], traducciones.traduce_numerico(b[1]))
-    fdist = FreqDist(bigrams_tokens)  # Estudio de frecuencia
-    list_tokens_num = fdist.most_common()
-    dict_tokens_freq = {}
-    for t in list_tokens_num:
-        print(t)
-        t_key = int(t[0][1])
+    bigrams_orig = bigrams(tokens)
+    fdist = FreqDist(bigrams_orig)
+    dict_bigrams = {}
+    for b in fdist:
+        b_tr = (b[0], traducciones.traduce_numerico(b[1]))
         try:
-            dict_tokens_freq[t_key] = dict_tokens_freq[t_key] + [[t[0][0], t[1]]]
+            if dict_bigrams[b_tr][1] < fdist.get(b):
+                dict_bigrams[b_tr] = [b, fdist.get(b)]
         except:
-            dict_tokens_freq[t_key] = [[t[0][0], t[1]]]
-    print(dict_tokens_freq)
-            
-    return dict_tokens_freq
+            dict_bigrams[b_tr] = [b, fdist.get(b)]
+    return dict_bigrams
