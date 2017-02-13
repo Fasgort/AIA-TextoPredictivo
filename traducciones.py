@@ -6,7 +6,8 @@ import modelos_probabilisticos
 
 #Método que traduce una frase a su equivalente numérico
 def traduce_numerico(str):
-    translate_str = re.sub("([^a-zA-Záéíóú ])", "", str.lower())
+    translate_str = re.sub("([^a-zA-Záéíóúñ\n ])", "", str.lower())
+    translate_str = re.sub("([\n])", " ", translate_str)
     translate_str = re.sub("([aábc])", "2", translate_str)
     translate_str = re.sub("([deéf])", "3", translate_str)
     translate_str = re.sub("([ghií])", "4", translate_str)

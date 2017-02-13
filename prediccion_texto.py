@@ -50,7 +50,7 @@ def prediccion_texto():
         texto = input("\nIntroduzca la frase que deseea predecir: ")
         traduccion = traducciones.traduce_numerico(texto)
         diccionarioBigramPalabras = modelos_probabilisticos.diccionario_bigramPalabras()
-        prediccion = traducciones.traduce_bibramPalabras(diccionarioBigramPalabras, traduccion)
+        prediccion = traducciones.traduce_bigramPalabras(diccionarioBigramPalabras, traduccion)
         print("\nLa predicción realizada para bigram de palabras es: ")
         print(prediccion)
         print("\n___________________________________________________")

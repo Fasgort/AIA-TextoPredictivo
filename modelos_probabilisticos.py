@@ -2,21 +2,24 @@
 # -*- coding: utf-8
 from nltk.corpus import PlaintextCorpusReader
 from nltk.tokenize import RegexpTokenizer
+from nltk import bigrams
 from nltk import FreqDist
+from collections import Counter
 import traducciones
 import operator
+import re
 
 def diccionario_unigramLetras():
     # Lectura y transformación de Corpus
-    wordlists = PlaintextCorpusReader("Corpus", '.*')
-    tokenizer = RegexpTokenizer(r'[a-zA-Záéíóú]+')
-    corpus = tokenizer.tokenize(wordlists.raw())
+    corpus = PlaintextCorpusReader("Corpus", '.*')
+    tokenizer = RegexpTokenizer(r'[a-zA-Záéíóúñ]+')
+    tokens = tokenizer.tokenize(corpus.raw())
 
     frecuenciaLetras = {}
     diccionario = {}
 
     #Se crea un diccionario que tiene como clave la letra y como valor la frecuencia de esa letra en el corpus
-    for lineas in corpus:
+    for lineas in tokens:
         for letra in lineas:
             if letra in list(frecuenciaLetras.keys()):
                 count = frecuenciaLetras.get(letra)
@@ -42,19 +45,30 @@ def diccionario_unigramLetras():
 
 def diccionario_bigramLetras():
     # Lectura y transformación de Corpus
-    wordlists = PlaintextCorpusReader("Corpus", '.*')
-    tokenizer = RegexpTokenizer(r'[a-zA-Záéíóú]+')
-    corpus = tokenizer.tokenize(wordlists.raw())
+    corpus = PlaintextCorpusReader("Corpus", '.*')
+    corpus = re.sub("([^a-zA-Záéíóúñ\n ])", "", corpus.raw().lower())
+    corpus = re.sub("([\n])", " ", corpus)
+    
+    bigrams = Counter(x+y for x, y in zip(*[corpus[i:] for i in range(2)]))
+    list_tokens_num = bigrams.most_common()
+    dict_tokens_freq = {}
+    for t in list_tokens_num:
+        if t[0][0] != ' ':
+            t_num = [traducciones.traduce_numerico(t[0][0]), t[1]]
+            try:
+                dict_tokens_freq[(int(t_num[0]))] = dict_tokens_freq[(int(t_num[0]))] + [[t[0][1], t[1]]]
+            except:
+                dict_tokens_freq[int(t_num[0])] = [[t[0][1], t[1]]]
 
-    return ""
+    return dict_tokens_freq
 
 def diccionario_unigramPalabras():
     # Lectura y transformación de Corpus
-    wordlists = PlaintextCorpusReader("Corpus\\", '.*')
-    tokenizer = RegexpTokenizer(r'[a-zA-Záéíóú]+')
-    tokens = tokenizer.tokenize(wordlists.raw())
+    corpus = PlaintextCorpusReader("Corpus\\", '.*')
+    tokenizer = RegexpTokenizer(r'[a-zA-Záéíóúñ]+')
+    tokens = tokenizer.tokenize(corpus.raw())
 
-    # Generación diccionario de palabras + frecuencia
+    # Generación diccionario unigram de palabras + frecuencia
     fdist = FreqDist(tokens)  # Estudio de frecuencia
     list_tokens_num = fdist.most_common()
     dict_tokens_freq = {}
@@ -69,8 +83,20 @@ def diccionario_unigramPalabras():
 
 def diccionario_bigramPalabras():
     # Lectura y transformación de Corpus
-    wordlists = PlaintextCorpusReader("Corpus", '.*')
-    tokenizer = RegexpTokenizer(r'[a-zA-Záéíóú]+')
-    corpus = tokenizer.tokenize(wordlists.raw())
+    corpus = PlaintextCorpusReader("Corpus", '.*')
+    tokenizer = RegexpTokenizer(r'[a-zA-Záéíóúñ]+')
+    tokens = tokenizer.tokenize(corpus.raw())
+    
+    # Generación diccionario bigram de palabras + frecuencia
+    bigrams_tokens = bigrams(tokens)
+    fdist = FreqDist(bigrams_tokens)  # Estudio de frecuencia
+    list_tokens_num = fdist.most_common()
+    dict_tokens_freq = {}
+    for t in list_tokens_num:
+        t_num = [traducciones.traduce_numerico(t[0][0]), t[1]]
+        try:
+            dict_tokens_freq[(int(t_num[0]))] = dict_tokens_freq[(int(t_num[0]))] + [[t[0][1], t[1]]]
+        except:
+            dict_tokens_freq[int(t_num[0])] = [[t[0][1], t[1]]]
 
-    return ""
+    return dict_tokens_freq
