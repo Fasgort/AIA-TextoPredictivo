@@ -9,6 +9,7 @@ import traducciones
 import operator
 import re
 
+#Método que crea y devuelve el diccionario de unigram de letras
 def diccionario_unigramLetras():
     # Lectura y transformación de Corpus
     corpus = PlaintextCorpusReader("Corpus", '.*')
@@ -27,7 +28,7 @@ def diccionario_unigramLetras():
             else:
                 frecuenciaLetras[letra] = 1
 
-    #Se ordena el diccionario por los valores, de mayor a menor. Esto de vuelve un tupla
+    #Se ordena el diccionario por los valores de mayor a menor. Esto de vuelve un tupla
     frecuenciaLetras = sorted(frecuenciaLetras.items(), key=operator.itemgetter(1), reverse=1)
 
     #Se recorre la tupla, transformando el primer elemento (la letra) a su numérico
@@ -40,26 +41,34 @@ def diccionario_unigramLetras():
             diccionario.get(numerico).append([letra_frec[0], letra_frec[1]])
         else:
             diccionario[numerico] = [[letra_frec[0], letra_frec[1]]]
+
     return diccionario
 
+# Método que crea y devuelve el diccionario de bigram de letras
 def diccionario_bigramLetras():
     # Lectura y transformación de Corpus
     corpus = PlaintextCorpusReader("Corpus", '.*')
     corpus = re.sub("([^a-zA-Záéíóúñ\n ])", "", corpus.raw().lower())
     corpus = re.sub("([\n])", " ", corpus)
-    
-    bigrams = Counter(x+y for x, y in zip(*[corpus[i:] for i in range(2)]))
-    #bigrams_mix = Counter()
+
+    # Se cuenta cuantas veces aparece en el corpus los pares de letras (incluido espacios)
+    bigrams = Counter(x + y for x, y in zip(*[corpus[i:] for i in range(2)]))
+
     dict_bigrams = {}
     for b in bigrams:
+        # A cada par de letras, mientras que no estén vacios, se le traduce su segunda letra a su correspondiente numérico
         if b[0] != " " and b[1] != " ":
+            #b_tr será a clave del diccionario
             b_tr = b[0] + traducciones.traduce_numerico(b[1])
-            #bigrams_mix[b_tr] = bigrams_mix[b_tr] + bigrams[b]
             try:
+                #Si la clave existe, mira que la frecuencia que está en el diccionario sea más pequeña a la frecuencia del
+                #nuevo valor, y si es así, se actualiza por este nuevo valor (Se queda con la frecuencia más alta y su traducción)
                 if dict_bigrams[b_tr][1] < bigrams[b]:
                     dict_bigrams[b_tr] = [b, bigrams[b]]
             except:
-                dict_bigrams[b_tr] = [b, bigrams[b]]                    
+                #Si no está esa clave se añade
+                dict_bigrams[b_tr] = [b, bigrams[b]]
+
     return dict_bigrams
 
 def diccionario_unigramPalabras():
@@ -73,11 +82,15 @@ def diccionario_unigramPalabras():
     list_tokens_num = fdist.most_common()
     dict_unigrams = {}
     for t in list_tokens_num:
+        #Se traduce cada palabra a su numerico [numerico, frecuencia]
         t_num = [traducciones.traduce_numerico(t[0]), t[1]]
         try:
+            #Si el numérico ya existe en el diccionario se añade la palabra y la frecuencia
             dict_unigrams[(int(t_num[0]))] = dict_unigrams[(int(t_num[0]))] + [[t[0], t[1]]]
         except:
+            #Si no existe se crea
             dict_unigrams[int(t_num[0])] = [[t[0], t[1]]]
+
     return dict_unigrams
 
 def diccionario_bigramPalabras():
@@ -97,4 +110,5 @@ def diccionario_bigramPalabras():
                 dict_bigrams[b_tr] = [b, fdist.get(b)]
         except:
             dict_bigrams[b_tr] = [b, fdist.get(b)]
+
     return dict_bigrams
